@@ -266,7 +266,7 @@ It determines the next appropriate action based on the current candidate state.
 
 RecruitFlow provides a dedicated interface for candidates.
 
-### Candidates can:
+#### Candidates can:
 
 Browse available positions
 View complete job descriptions
