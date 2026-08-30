@@ -460,3 +460,394 @@ Insufficient Evidence
 ---
 This gives HR more context about why a recommendation was generated.
 
+# Missing Evidence Detection
+
+A major capability of RecruitFlow is its ability to identify when available candidate information is insufficient.
+
+Consider a position requiring Kubernetes experience.
+
+A candidate's resume may contain:
+
+```text
+Kubernetes
+```
+---
+However, simply mentioning a technology does not necessarily provide enough evidence of meaningful experience.
+
+RecruitFlow can identify the requirement as:
+
+---
+
+```text
+Kubernetes Experience
+
+Evidence Status:
+Insufficient Evidence
+```
+
+---
+The agent can then generate a targeted clarification question.
+
+For example:
+```text
+Can you describe a production deployment you managed
+using Kubernetes and the responsibilities you owned?
+```
+
+---
+Once the candidate responds, the system can:
+
+Store the response
+Update candidate state
+Add the new evidence
+Re-evaluate the requirement
+Update the overall recommendation
+
+This creates a continuous evidence loop.
+
+---
+
+```mermaid
+flowchart TD
+
+    A[Resume Evidence]
+    B[Evaluate Requirement]
+    C{Evidence Sufficient?}
+    D[Keep Evidence]
+    E[Generate Clarification Question]
+    F[Candidate Response]
+    G[Update Candidate State]
+
+    A --> B
+    B --> C
+
+    C -->|Yes| D
+
+    C -->|No| E
+    E --> F
+    F --> G
+    G --> B
+```
+
+---
+# Persistent Candidate State
+
+###### Recruitment is asynchronous.
+
+A candidate may apply today, receive a clarification request tomorrow, respond later, and eventually reach HR review.
+
+RecruitFlow therefore maintains persistent candidate state.
+
+A candidate can move through states such as:
+
+```text
+APPLIED
+   |
+   v
+UNDER_REVIEW
+   |
+   v
+NEEDS_CLARIFICATION
+   |
+   v
+AWAITING_CANDIDATE_REPLY
+   |
+   v
+RE_EVALUATED
+   |
+   v
+HR_REVIEW
+   |
+   v
+INTERVIEW_SCHEDULED
+```
+---
+Other possible outcomes include:
+
+---
+
+```text
+SELECTED
+REJECTED
+```
+---
+Persistent state allows the agent to resume workflows without losing context.
+
+# Automated Interview Workflow
+
+When HR selects a candidate, RecruitFlow can automatically trigger the next operational steps.
+
+```mermaid
+sequenceDiagram
+
+    participant HR as HR Dashboard
+    participant Agent as RecruitFlow Agent
+    participant DB as Firestore
+    participant N8N as n8n
+    participant Candidate as Candidate
+    participant Recruiter as HR
+
+    HR->>Agent: Select Candidate
+    Agent->>DB: Update Candidate Status
+    Agent->>N8N: Trigger Interview Workflow
+
+    N8N->>Candidate: Send Interview Notification
+    N8N->>Recruiter: Send HR Confirmation
+
+    Agent->>DB: Store Interview Status
+
+    DB-->>HR: Updated Candidate Status
+```
+
+---
+The HR notification can include:
+
+Candidate name
+Candidate contact information
+Position
+Interview information
+Current status
+
+This helps prevent communication gaps and reduces manual coordination.
+
+# n8n Automation Layer
+
+n8n is used as the external workflow and integration layer.
+
+It is intentionally separated from the core AI reasoning system.
+
+```text
+Google Gemini + Google ADK
+        |
+        | Reasoning
+        | Evaluation
+        | Agent Orchestration
+        v
+RecruitFlow Backend
+        |
+        | Persistent State
+        v
+Firestore
+
+RecruitFlow Agent
+        |
+        | External Actions
+        v
+n8n
+        |
+        v
+Gmail
+        |
+        +--> Candidate
+        |
+        +--> HR
+```
+
+---
+This separation keeps the system modular.
+
+The AI agent is responsible for reasoning.
+
+n8n is responsible for external automation.
+
+Firestore is responsible for persistent state.
+
+# Agent Tools
+
+RecruitFlow is designed around specialized agent tools.
+
+Resume Analysis Tool
+
+Evaluates the candidate resume against:
+
+```text
+Resume
++
+Job Description
++
+Evaluation Criteria
+```
+
+---
+and produces structured candidate evidence.
+
+# Candidate State Tool
+
+Reads and updates:
+
+Candidate status
+Evaluation
+Recommendation
+Confidence
+Missing information
+Candidate responses
+Interview status
+Timestamps
+
+using Firestore.
+
+## Communication Tool
+
+Triggers external communication workflows through n8n.
+```text
+RecruitFlow Agent
+        |
+        v
+Communication Tool
+        |
+        v
+n8n Webhook
+        |
+        v
+Gmail
+        |
+        +--> Candidate
+        |
+        +--> HR
+```
+
+---
+# Human Approval Tool
+
+Allows consequential actions to pause for recruiter review.
+
+```text
+AI Recommendation
+        |
+        v
+HR Review
+        |
+        v
+HR Decision
+        |
+        v
+Workflow Continues
+```
+
+---
+## Structured AI Evaluation
+
+RecruitFlow is designed around structured AI outputs rather than fragile text parsing.
+
+A conceptual evaluation can contain:
+
+```text
+{
+  "score": 85,
+  "technical_score": 88,
+  "behavioral_score": 80,
+  "confidence": 0.91,
+  "recommendation": "ADVANCE",
+  "evidence": [],
+  "missing_information": []
+}
+```
+--- 
+
+Structured outputs make AI results easier to:
+
+Validate
+Store
+Display
+Process downstream
+Integrate with agent tools
+Use within automated workflows
+
+# Responsible AI
+
+Recruitment is a high-impact domain.
+
+RecruitFlow therefore follows a human-in-the-loop approach.
+
+The system is designed to:
+
+Surface evidence
+Identify missing information
+Distinguish between evidence and assumptions
+Make uncertainty visible
+Provide confidence
+Assist recruiters
+Automate repetitive operations
+Keep consequential decisions under human control
+
+RecruitFlow is not designed around:
+
+"Let AI hire people."
+
+It is designed around:
+
+### "Let AI remove operational friction so recruiters can focus on better human decisions."
+
+# Security and Privacy
+
+Recruitment systems process sensitive candidate information.
+
+RecruitFlow is designed with security and privacy considerations in mind.
+
+Key practices include:
+
+Keep credentials out of source control
+Protect environment variables
+Secure resume storage
+Restrict HR functionality to authorized users
+Separate candidate and HR interfaces
+Minimize unnecessary exposure of candidate information
+Use controlled service-to-service communication
+Maintain clear candidate state and workflow history
+
+--- 
+
+# Technology Stack
+
+| Layer           | Technology                         |
+| --------------- | ---------------------------------- |
+| AI Model        | Google Gemini                      |
+| Agent Framework | Google Agent Development Kit (ADK) |
+| Backend         | Python + FastAPI                   |
+| Database        | Google Cloud Firestore             |
+| File Storage    | Google Cloud Storage               |
+| Deployment      | Google Cloud Run                   |
+| Automation      | n8n                                |
+| Communication   | Gmail                              |
+| Frontend        | Candidate Portal + HR Dashboard    |
+| Version Control | Git + GitHub                       |
+
+---
+
+# Google Cloud Architecture
+
+```mermaid
+flowchart TD
+
+    Candidate[Candidate Portal]
+    HR[HR Dashboard]
+
+    CloudRun[Google Cloud Run]
+
+    ADK[Google ADK Agent]
+
+    Gemini[Google Gemini]
+
+    Firestore[(Firestore)]
+
+    GCS[(Cloud Storage)]
+
+    N8N[n8n]
+
+    Gmail[Gmail]
+
+    Candidate --> CloudRun
+    HR --> CloudRun
+
+    CloudRun --> ADK
+
+    ADK --> Gemini
+    ADK --> Firestore
+    ADK --> GCS
+    ADK --> N8N
+
+    N8N --> Gmail
+
+    Firestore --> HR
+```
+
