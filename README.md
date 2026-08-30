@@ -256,3 +256,40 @@ Human Decision
      v
 Operational Workflow
 ```
+--- 
+
+The agent does not simply produce an answer.
+
+It determines the next appropriate action based on the current candidate state.
+
+## Candidate Portal
+
+RecruitFlow provides a dedicated interface for candidates.
+
+### Candidates can:
+
+Browse available positions
+View complete job descriptions
+Review requirements
+Apply for jobs
+Upload resumes
+Submit required information
+Respond to clarification questions
+Receive recruitment communications
+Receive interview notifications
+
+The candidate experience is intentionally simple.
+
+The complexity of the recruitment workflow remains behind the scenes.
+
+```mermaid
+flowchart LR
+
+    A[Browse Jobs] --> B[View Job]
+    B --> C[Review Requirements]
+    C --> D[Submit Application]
+    D --> E[Upload Resume]
+    E --> F[Application Processing]
+    F --> G[Recruitment Communication]
+```
+
