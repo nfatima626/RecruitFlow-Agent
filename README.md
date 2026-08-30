@@ -108,7 +108,45 @@ What should happen next?
           |
           v
 Does the next action require human approval?
-
 ```
 
 --- 
+
+This allows the system to move a candidate through the recruitment process while keeping HR in control of consequential decisions.
+
+---
+
+```mermaid
+flowchart TB
+
+    Candidate[Candidate Portal]
+    HR[HR Dashboard]
+
+    API[FastAPI Backend<br/>Google Cloud Run]
+
+    Agent[Google ADK<br/>Recruiting Agent]
+
+    Gemini[Google Gemini<br/>AI Reasoning]
+
+    Firestore[(Google Cloud Firestore<br/>Candidate State)]
+
+    Storage[(Google Cloud Storage<br/>Resume Files)]
+
+    N8N[n8n<br/>Automation Layer]
+
+    Gmail[Gmail<br/>Communication]
+
+    Candidate --> API
+    HR --> API
+
+    API --> Agent
+
+    Agent --> Gemini
+    Agent --> Firestore
+    Agent --> Storage
+    Agent --> N8N
+
+    N8N --> Gmail
+
+    Firestore --> HR
+```
