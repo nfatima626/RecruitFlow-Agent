@@ -164,3 +164,49 @@ flowchart TB
 | Gmail                | Candidate and HR communication                                       |
 | Cloud Run            | Backend deployment                                                   |
 ---
+
+---
+## End-to-End Recruitment Workflow
+---
+
+```mermaid
+flowchart TD
+
+    A[Candidate Applies] --> B[Resume Uploaded]
+
+    B --> C[RecruitFlow Agent]
+
+    C --> D[Resume + Job Description Analysis]
+
+    D --> E{Is Evidence Sufficient?}
+
+    E -->|No| F[Identify Missing Evidence]
+
+    F --> G[Generate Targeted Question]
+
+    G --> H[Candidate Responds]
+
+    H --> I[Update Candidate State]
+
+    I --> D
+
+    E -->|Yes| J[Structured Candidate Evaluation]
+
+    J --> K[AI Recommendation]
+
+    K --> L[HR Dashboard]
+
+    L --> M{HR Decision}
+
+    M -->|Reject| N[Reject Candidate]
+
+    M -->|Select| O[Interview Workflow]
+
+    O --> P[Candidate Notification]
+
+    O --> Q[HR Confirmation]
+
+    P --> R[Update Candidate Status]
+
+    Q --> R
+```
