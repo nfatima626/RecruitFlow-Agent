@@ -150,3 +150,17 @@ flowchart TB
 
     Firestore --> HR
 ```
+---
+| Component            | Responsibility                                                       |
+| -------------------- | -------------------------------------------------------------------- |
+| Candidate Portal     | Job browsing, applications, resume submission, candidate interaction |
+| HR Dashboard         | Job management, candidate review, AI recommendations, HR decisions   |
+| FastAPI              | Backend APIs and application logic                                   |
+| Google ADK           | Agent orchestration and workflow coordination                        |
+| Google Gemini        | AI reasoning, analysis, and structured evaluation                    |
+| Firestore            | Persistent candidate state and recruitment data                      |
+| Google Cloud Storage | Resume and document storage                                          |
+| n8n                  | External workflow automation and integrations                        |
+| Gmail                | Candidate and HR communication                                       |
+| Cloud Run            | Backend deployment                                                   |
+---
