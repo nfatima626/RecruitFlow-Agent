@@ -79,3 +79,19 @@ AI Score
    |
    v
 Accept / Reject
+
+```
+
+```
+This approach does not account for incomplete information, candidate clarification, evolving candidate state, or the operational work required after an evaluation.
+
+RecruitFlow takes a different approach.
+
+## Solution
+
+RecruitFlow treats recruitment as a continuous operational workflow rather than a single resume-scoring task.
+
+The agent continuously considers:
+```
+
+
