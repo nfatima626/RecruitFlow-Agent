@@ -1,413 +1,269 @@
-# RecruitFlow Agent
+RecruitFlow Agent
 
-> **Automate the work. Preserve the judgment.**
+Automate the work. Preserve the judgment.
 
-**RecruitFlow Agent** is an AI-powered recruiting operations platform designed to help HR teams manage the journey from **job application to interview** without drowning in repetitive administrative work.
+RecruitFlow Agent is an AI-powered recruiting operations platform designed to help HR teams manage the complete candidate journey, from job application to interview, while keeping the final hiring decision in human hands.
 
-Instead of acting as another AI resume scorer, RecruitFlow uses an **agentic workflow** to understand job requirements, evaluate candidate evidence, identify missing information, communicate with candidates, maintain persistent candidate state, and recommend what should happen next.
-
-The final hiring decision always remains with the **human recruiter**.
-
----
-
-## The Problem
-
-Recruiting involves far more than reviewing resumes.
-
-HR teams often spend significant time manually:
-
-- Creating and managing job listings
-- Reviewing applications
-- Comparing resumes with job requirements
-- Identifying missing candidate information
-- Sending follow-up emails
-- Waiting for and tracking candidate responses
-- Updating candidate statuses
-- Coordinating interviews
-- Sending interview confirmations
-- Keeping candidate records organized
-
-As applications grow, these operational tasks become repetitive, fragmented, and difficult to manage consistently.
-
-Most recruitment AI tools focus on one question:
-
-> **"How good is this resume?"**
-
-RecruitFlow asks a much more useful question:
-
-> **"What needs to happen next in this candidate's journey?"**
-
----
-
-# Our Solution
-
-RecruitFlow is designed as an **autonomous recruiting operations agent**.
-
-The agent doesn't simply generate a score. It observes the current candidate state, evaluates available evidence, identifies what information is missing, and determines the next appropriate operational step.
-
-### The core idea
-
-**Candidate applies → Agent evaluates → Agent identifies gaps → Candidate provides missing information → Agent re-evaluates → HR reviews → HR decides → RecruitFlow handles the next operational actions**
-
-This transforms recruitment from a collection of disconnected manual tasks into a coordinated workflow.
-
----
-
-# The RecruitFlow Experience
-
-RecruitFlow provides two dedicated experiences:
-
-### Candidate Portal
-
-A simple interface where candidates can:
-
-- Browse available positions
-- View job details
-- Submit applications
-- Upload resumes
-- Provide required information
-- Receive recruitment communications
-
-### HR Dashboard
-
-A professional workspace where HR can:
-
-- Create job listings
-- Edit job listings
-- Delete job listings
-- View all applications
-- Filter and review candidates
-- Open complete candidate profiles
-- View AI evaluations
-- Review supporting evidence
-- See missing information
-- See AI recommendations
-- Select or reject candidates
-- Track interview status
-- Monitor the recruitment pipeline
+Instead of being just another AI resume screening tool, RecruitFlow acts as an intelligent recruiting operations agent. It analyzes job requirements and candidate evidence, identifies missing information, asks targeted follow-up questions, maintains candidate state, communicates with candidates, and recommends the next appropriate action.
 
 The goal is simple:
 
-> **Give HR more visibility and more control, while removing unnecessary manual work.**
+Let AI handle repetitive operational work so HR can focus on making better human decisions.
 
----
+The Problem
 
-# The Hero Workflow
+Recruiting involves much more than reviewing resumes.
 
-```text
-                    ┌──────────────────┐
-                    │  Candidate Portal│
-                    └────────┬─────────┘
-                             │
-                             ▼
-                       Job Application
-                             │
-                             ▼
-                 ┌──────────────────────┐
-                 │   RecruitFlow Agent  │
-                 └──────────┬───────────┘
-                            │
-                   Resume + Job Description
-                            │
-                            ▼
-                    Evidence Evaluation
-                            │
-                 ┌──────────┴──────────┐
-                 │                     │
-                 ▼                     ▼
-          Missing Evidence       Sufficient Evidence
-                 │                     │
-                 ▼                     │
-        Targeted Clarification        │
-                 │                     │
-                 ▼                     │
-        Candidate Responds             │
-                 │                     │
-                 └──────────┬──────────┘
-                            ▼
-                      Re-evaluation
-                            │
-                            ▼
-                    AI Recommendation
-                            │
-                            ▼
-                      HR Dashboard
-                            │
-                            ▼
-                    Human HR Decision
-                       /         \
-                      /           \
-                 REJECT           SELECT
-                    │                │
-                    ▼                ▼
-              Candidate        Interview Workflow
-                Email                 │
-                              ┌───────┴───────┐
-                              ▼               ▼
-                         Candidate Email    HR Email
+HR teams often have to manually:
+
+Create and manage job listings
+Review large numbers of applications
+Compare resumes with job requirements
+Identify missing candidate information
+Send follow-up emails
+Track candidate responses
+Update candidate statuses
+Coordinate interviews
+Notify candidates
+Keep candidate records organized
+
+As the number of applicants increases, these tasks become repetitive, time-consuming, and difficult to manage consistently.
+
+Most recruitment AI tools focus on:
+
+"Score this resume."
+
+RecruitFlow focuses on:
+
+"What needs to happen next in this candidate's journey?"
+
+Our Solution
+
+RecruitFlow turns recruitment into an intelligent, stateful workflow.
+
+Candidate applies → AI evaluates → Agent identifies missing evidence → Candidate provides clarification → Agent re-evaluates → HR reviews → HR decides → RecruitFlow handles the next operational steps.
+
+The system is designed to keep the entire candidate journey organized while reducing repetitive work for HR.
+
+Core Workflow
+
+Candidate Portal
+↓
+Job Application
+↓
+Resume + Job Description Analysis
+↓
+Structured AI Evaluation
+↓
+Missing Evidence Detection
+↓
+Targeted Candidate Question
+↓
+Candidate Response
+↓
+Candidate State Updated
+↓
+Re-evaluation
+↓
+AI Recommendation
+↓
+HR Dashboard
+↓
+Human HR Decision
+↓
+Select / Reject
+↓
+Automated Next Action
+
 What Makes RecruitFlow Agentic?
 
-A traditional recruitment system might follow a fixed pipeline:
+A traditional recruitment system might simply do:
 
 Resume → Score → Pass/Reject
 
-RecruitFlow is designed to reason about the current state of a candidate and determine what information or action is required next:
+RecruitFlow is designed to reason about the current state of a candidate and determine what should happen next.
 
-Candidate State
-      ↓
-What do we know?
-      ↓
-What evidence is missing?
-      ↓
-What should happen next?
-      ↓
-Take action
-      ↓
-Wait for new information
-      ↓
-Update state
-      ↓
-Re-evaluate
+The agent can ask:
 
-This makes the system capable of handling recruitment as an ongoing process, rather than treating every candidate as a single request.
+What information do we already have?
+What evidence is still missing?
+Is the available information sufficient?
+Should the candidate be asked for clarification?
+Has the candidate responded?
+Should the candidate be re-evaluated?
+Is HR approval required?
+What operational action should happen next?
 
-Intelligent Resume & Job Evaluation
+This makes RecruitFlow an ongoing recruiting agent rather than a one-time resume scoring system.
 
-RecruitFlow evaluates candidates against the specific role they applied for.
+Intelligent Resume and Job Evaluation
+
+RecruitFlow evaluates every candidate against the specific job they applied for.
 
 The evaluation considers:
 
-Job Description
+Job description
 Required skills
 Preferred skills
-Company-defined evaluation criteria
 Relevant experience
 Evidence found in the resume
 Candidate responses
 Missing information
 Unverified claims
+Confidence in the evaluation
 
-The agent can identify:
+The system can identify:
 
-Required Skill Evidence
-
-What the candidate has actually demonstrated.
-
-Missing Requirements
-
-What cannot yet be confidently evaluated.
-
-Unverified Claims
-
-Claims that require additional information.
-
-Relevant Experience
-
-Experience directly related to the role.
-
-Potential Strengths
-
-Areas where the candidate may be particularly suitable.
-
-Confidence
-
-How confident the system is in its evaluation.
-
-Recommendation
-
-A recommendation for HR review.
-
+Relevant strengths
+Required skill evidence
+Missing requirements
+Unverified claims
+Areas requiring clarification
+Overall candidate fit
+AI recommendation
+Confidence level
 Dynamic Missing-Evidence Detection
 
-One of RecruitFlow's key capabilities is its ability to identify when the available information is not enough.
+One of RecruitFlow's key capabilities is identifying when the available candidate information is not enough to make a confident evaluation.
 
-For example, suppose a role requires Kubernetes experience.
+For example, if a job requires Kubernetes experience and a resume simply mentions Kubernetes without providing meaningful evidence, RecruitFlow can recognize that the requirement needs clarification.
 
-A candidate's resume says:
-
-"Kubernetes"
-
-But provides no meaningful evidence about how they used it.
-
-Instead of making an unsupported assumption, RecruitFlow can recognize:
-
-Kubernetes:
-Insufficient evidence
-
-The agent can then generate a targeted question such as:
+Instead of immediately rejecting the candidate, the agent can generate a targeted question such as:
 
 "Can you describe a production deployment you managed using Kubernetes and the responsibilities you owned?"
 
 The candidate responds.
 
-The agent receives the new information, updates the candidate's state, and re-evaluates the candidate.
+RecruitFlow then:
 
-The result
+Stores the response
+Updates the candidate state
+Re-evaluates the available evidence
+Updates the recommendation
+
+This creates a continuous feedback loop:
+
 Resume
-   ↓
+↓
 Evaluation
-   ↓
+↓
 Missing Evidence
-   ↓
+↓
 Targeted Question
-   ↓
+↓
 Candidate Reply
-   ↓
+↓
 State Update
-   ↓
+↓
 Re-evaluation
-
-This is the difference between:
-
-AI that scores candidates
-
-and
-
-AI that actively moves a workflow forward.
 
 Human-in-the-Loop Hiring
 
-RecruitFlow is intentionally designed so that AI does not replace HR judgment.
+RecruitFlow is designed to assist HR, not replace HR.
 
-The system can:
+AI can:
 
-Analyze
-Reason
-Find missing evidence
-Ask questions
-Maintain state
-Recommend
+Analyze candidates
+Extract evidence
+Identify missing information
+Ask clarification questions
+Maintain candidate state
+Generate recommendations
 Automate routine communication
 
-But the final consequential decision remains with the recruiter.
+But the final hiring decision remains with the human recruiter.
 
-             AI Evaluation
-                   ↓
-           AI Recommendation
-                   ↓
-              HR Review
-                   ↓
-          ┌────────┴────────┐
-          ▼                 ▼
-       SELECT             REJECT
-          │
-          ▼
-   Automated Workflow
+AI Recommendation
+↓
+HR Review
+↓
+HR Decision
+↓
+Select / Reject
 
-This means:
+If HR selects a candidate, RecruitFlow can automatically trigger the next operational workflow.
 
-AI handles operational complexity. HR retains decision-making authority.
+The principle is:
+
+Automate the work. Preserve the judgment.
 
 HR Dashboard
 
-The HR Dashboard is the operational control center of RecruitFlow.
-
-Overview
-
-HR can quickly see:
-
-Total jobs
-Active jobs
-Total applicants
-Candidates under review
-Candidates needing clarification
-Interviews scheduled
-Selected candidates
-Rejected candidates
-Job Management
+RecruitFlow includes a dedicated HR Dashboard designed to give recruiters complete visibility and control over the recruitment process.
 
 HR can:
 
-Create jobs
-Edit jobs
-Delete jobs
-Activate/deactivate listings
-View applicants for each position
-Candidate Management
+Create new job listings
+Edit job listings
+Delete job listings
+Activate or deactivate jobs
+View all available jobs
+See how many candidates applied to each job
+View candidate details
+Review resumes
+Review AI evaluations
+See candidate evidence
+See missing information
+Review candidate responses
+View AI recommendations
+Select candidates
+Reject candidates
+Track candidate status
+Track interview status
 
-For each candidate, HR can access:
-
-Candidate information
-Resume
-Applied position
-Skills
-Experience
-Evidence
-Missing requirements
-Candidate responses
-AI evaluation
-AI recommendation
-Confidence
-Current status
-Interview information
-
-The dashboard is designed around one principle:
-
-Everything HR needs should be visible in one place.
+The goal is to keep everything HR needs accessible from one professional and easy-to-use interface.
 
 Candidate Portal
 
-Candidates interact with a clean and focused application experience.
+RecruitFlow also provides a separate Candidate Portal.
 
-Browse Jobs
-     ↓
-Select Position
-     ↓
-Read Job Description
-     ↓
-Apply
-     ↓
-Upload Resume
-     ↓
-Submit Application
-     ↓
-Receive Updates
+Candidates can:
 
-The candidate should never need to understand the complexity of the AI system operating behind the scenes.
+Browse available jobs
+View job details
+Read job requirements
+Apply for a position
+Upload their resume
+Submit required information
+Receive recruitment communications
+
+The candidate experience remains simple, while the complexity of the recruitment workflow is handled behind the scenes.
 
 Automated Interview Workflow
 
-Once HR selects a candidate, RecruitFlow can automatically coordinate the next operational steps.
+When HR selects a candidate, RecruitFlow can automatically initiate the next steps.
 
 HR Selects Candidate
-        ↓
+↓
 Candidate Status Updated
-        ↓
+↓
 Interview Workflow Triggered
-        ↓
-Candidate Notified
-        ↓
-HR Notified
-        ↓
+↓
+Candidate Receives Interview Email
+↓
+HR Receives Confirmation Email
+↓
 Dashboard Updated
 
-The system can send:
+The HR notification can contain:
 
-Candidate Email
-
-Interview invitation and relevant interview information.
-
-HR Email
-
-Confirmation containing:
-
-Candidate details
+Candidate name
+Candidate contact details
 Position
 Interview information
-Candidate contact information
-Current recruitment status
+Current candidate status
 
-This reduces communication gaps and helps prevent scheduling confusion.
+This helps reduce communication gaps and prevents scheduling confusion.
 
 Persistent Candidate State
 
-Recruitment is asynchronous.
+Recruitment is not a single request-response interaction.
 
-A candidate might:
+A candidate may:
 
 Apply today
-Receive a clarification request tomorrow
-Reply later
+Receive a clarification request
+Respond later
 Be re-evaluated
 Wait for HR review
 Be selected
@@ -418,180 +274,155 @@ RecruitFlow therefore maintains persistent candidate state.
 A candidate can move through states such as:
 
 APPLIED
-   ↓
+↓
 UNDER_REVIEW
-   ↓
+↓
 NEEDS_CLARIFICATION
-   ↓
+↓
 AWAITING_CANDIDATE_REPLY
-   ↓
+↓
 RE_EVALUATED
-   ↓
+↓
 HR_REVIEW
-   ↓
+↓
 INTERVIEW_SCHEDULED
 
 Other outcomes include:
 
 SELECTED
+
 REJECTED
 
-This allows the agent to resume a candidate journey without losing context.
+This stateful architecture allows the agent to continue a candidate's journey without losing context.
 
 Architecture
-                         ┌────────────────────┐
-                         │  Candidate Portal  │
-                         └─────────┬──────────┘
-                                   │
-                                   ▼
-                         ┌────────────────────┐
-                         │     Cloud Run      │
-                         │    FastAPI API     │
-                         └─────────┬──────────┘
-                                   │
-                                   ▼
-                         ┌────────────────────┐
-                         │ Google ADK Agent   │
-                         │ Recruiting         │
-                         │ Coordinator        │
-                         └─────────┬──────────┘
-                                   │
-                                   ▼
-                         ┌────────────────────┐
-                         │       Gemini       │
-                         │ AI Reasoning Layer │
-                         └─────────┬──────────┘
-                                   │
-                  ┌────────────────┼────────────────┐
-                  │                │                │
-                  ▼                ▼                ▼
-             Firestore            GCS           Agent Tools
-                  │                │                │
-                  │             Resumes             │
-                  │                                 ▼
-                  │                                n8n
-                  │                                 │
-                  ▼                                 ▼
-           Candidate State                        Gmail
-                  │
-                  ▼
-            HR Dashboard
+
+Candidate Portal
+↓
+FastAPI Backend
+↓
+Google ADK Recruiting Agent
+↓
+Google Gemini
+↓
+Agent Tools
+↓
+Firestore
+↓
+Persistent Candidate State
+
+Resume files are stored using Google Cloud Storage.
+
+External communication and workflow automation are handled through n8n and Gmail.
+
+HR interacts with the system through the dedicated HR Dashboard.
+
 Technology Stack
-Layer	Technology
-AI	Google Gemini
-Agent Framework	Google Agent Development Kit (ADK)
-Backend	Python + FastAPI
-Persistent State	Google Cloud Firestore
-File Storage	Google Cloud Storage
-Deployment	Google Cloud Run
-Automation	n8n
-Communication	Gmail
-Candidate Frontend	Web Application
-HR Frontend	HR Dashboard
-Version Control	Git + GitHub
+
+AI Model: Google Gemini
+
+Agent Framework: Google Agent Development Kit (ADK)
+
+Backend: Python + FastAPI
+
+Database: Google Cloud Firestore
+
+File Storage: Google Cloud Storage
+
+Deployment: Google Cloud Run
+
+Automation: n8n
+
+Communication: Gmail
+
+Frontend: Candidate Portal + HR Dashboard
+
+Version Control: Git + GitHub
+
+Why n8n?
+
+n8n is used as the automation and integration layer rather than the intelligence layer.
+
+Google ADK + Gemini handle:
+
+Reasoning
+Agent orchestration
+Evaluation
+Decision support
+
+Firestore handles:
+
+Persistent candidate state
+Candidate records
+Workflow status
+
+n8n handles:
+
+External workflow automation
+Webhooks
+Email actions
+Integrations
+
+Gmail handles:
+
+Candidate communication
+HR notifications
+
+This separation keeps the architecture modular and easier to maintain.
+
 Agent Tools
 
-RecruitFlow's central agent interacts with specialized tools rather than directly handling every operation itself.
+RecruitFlow is designed around specialized agent tools.
 
 Resume Analysis Tool
 
-Compares:
-
-Resume
-+
-Job Description
-+
-Evaluation Criteria
-
-and produces structured candidate evidence.
+Analyzes the candidate resume against the specific job description and evaluation criteria.
 
 State Tool
 
-Reads and updates candidate state in Firestore.
+Reads and updates candidate information and workflow state in Firestore.
 
-Example state information includes:
-
-candidate_status
-evaluation
-recommendation
-confidence
-missing_information
-candidate_reply
-interview_status
-timestamps
 Communication Tool
 
-The agent can request external communication through n8n.
+Allows the agent to trigger external communication workflows through n8n.
 
-RecruitFlow Agent
-       ↓
-Communication Tool
-       ↓
-n8n Webhook
-       ↓
-Gmail
-       ↓
-Candidate / HR
 Human Approval Tool
 
-Consequential actions can pause for HR approval before continuing.
+Allows consequential actions to pause for HR review and approval.
 
-Agent Recommendation
-        ↓
-Human Approval
-        ↓
-HR Decision
-        ↓
-Workflow Continues
-Why n8n?
+Structured AI Evaluation
 
-n8n is used as the automation and integration layer, not as the intelligence layer.
+RecruitFlow is designed to use structured AI outputs instead of relying on fragile text parsing.
 
-The responsibilities are intentionally separated:
+A conceptual evaluation can contain:
 
-Google ADK + Gemini
-        ↓
-Reasoning & Agent Orchestration
+Overall score
+Technical score
+Behavioral score
+Confidence
+Recommendation
+Evidence
+Missing information
 
-Firestore
-        ↓
-Persistent Candidate State
-
-n8n
-        ↓
-External Workflow Automation
-
-Gmail
-        ↓
-Communication
-
-This keeps the agent architecture modular and allows external actions to be changed without rebuilding the core reasoning system.
-
-Structured AI Outputs
-
-RecruitFlow is designed around structured AI outputs rather than fragile text parsing.
-
-A conceptual evaluation can look like:
+Example:
 
 {
-  "score": 85,
-  "technical_score": 88,
-  "behavioral_score": 80,
-  "confidence": 0.91,
-  "recommendation": "ADVANCE",
-  "evidence": [],
-  "missing_information": []
+"score": 85,
+"technical_score": 88,
+"behavioral_score": 80,
+"confidence": 0.91,
+"recommendation": "ADVANCE",
+"evidence": [],
+"missing_information": []
 }
 
-Structured outputs allow the backend and agent tools to reliably consume AI decisions and reduce dependence on regex-based parsing.
+Structured outputs make the AI results easier for the backend and agent tools to consume reliably.
 
 Responsible AI
 
-Recruitment is a high-impact domain.
+Recruitment is a high-impact domain, so RecruitFlow follows a human-in-the-loop approach.
 
-RecruitFlow therefore follows a human-in-the-loop design.
-
-The system is intended to:
+The system is designed to:
 
 Surface evidence
 Identify missing information
@@ -601,35 +432,33 @@ Assist recruiters
 Automate repetitive operations
 Keep consequential decisions under human control
 
-RecruitFlow is not designed around:
+RecruitFlow is not built around:
 
 "Let AI hire people."
 
-It is designed around:
+It is built around:
 
 "Let AI remove operational friction so recruiters can focus on better human decisions."
 
-Security & Privacy
+Security and Privacy
 
 Recruitment systems handle sensitive candidate information.
 
 RecruitFlow is designed with security and privacy in mind.
 
-Key practices include:
+Important practices include:
 
-Keep credentials out of source control
-Protect environment variables
-Use private cloud storage for resumes
-Restrict access to HR functionality
-Separate candidate and recruiter experiences
+Never commit credentials to GitHub
+Keep environment variables private
+Protect candidate resumes
+Use controlled access to HR functionality
+Separate candidate and recruiter interfaces
 Avoid unnecessary exposure of candidate information
-Use controlled service-to-service communication
+Use secure service-to-service communication in production
 Maintain clear candidate state and workflow history
-Example: End-to-End Candidate Journey
+End-to-End Example
 
-Imagine a company publishes:
-
-AI Engineer
+Imagine a company posts an AI Engineer position.
 
 Required skills:
 
@@ -639,193 +468,217 @@ FastAPI
 Cloud Deployment
 Kubernetes
 
-A candidate applies.
+A candidate submits their resume.
 
-1. Application
+RecruitFlow evaluates the application.
 
-The candidate submits their resume through the Candidate Portal.
+Python: Evidence Found
 
-2. AI Evaluation
+Machine Learning: Evidence Found
 
-RecruitFlow analyzes the resume against the specific role.
+FastAPI: Evidence Found
 
-Python              ✓ Evidence found
-Machine Learning    ✓ Evidence found
-FastAPI             ✓ Evidence found
-Cloud Deployment    ✓ Evidence found
-Kubernetes          ? Insufficient evidence
-3. Missing Evidence
+Cloud Deployment: Evidence Found
 
-The agent determines that Kubernetes experience cannot be confidently evaluated.
+Kubernetes: Insufficient Evidence
 
-4. Clarification
+Instead of making an unsupported decision, the agent asks the candidate for clarification.
 
-RecruitFlow sends a targeted question to the candidate.
+The candidate responds.
 
-5. Candidate Reply
+RecruitFlow updates the candidate state and re-evaluates the evidence.
 
-The candidate provides additional information.
+The AI then provides a recommendation to HR.
 
-6. Re-evaluation
+HR opens the candidate profile and reviews:
 
-The agent updates the candidate state and evaluates the new evidence.
+Resume
+Skills
+Evidence
+Candidate response
+Missing information
+AI recommendation
+Confidence
 
-7. Recommendation
+HR makes the final decision.
 
-RecruitFlow generates a structured recommendation for HR.
+If HR selects the candidate, RecruitFlow automatically updates the candidate status and triggers the interview communication workflow.
 
-8. HR Review
-
-HR reviews the candidate profile, evidence, response, confidence, and recommendation.
-
-9. Human Decision
-
-HR selects the candidate.
-
-10. Automated Operations
-
-RecruitFlow updates the candidate state and triggers the appropriate interview communication workflow.
-
-The candidate receives the relevant notification.
+The candidate receives the interview communication.
 
 HR receives a confirmation.
 
-The dashboard reflects the new status.
+The dashboard reflects the updated status.
 
 What RecruitFlow Automates
-Recruitment Task	RecruitFlow
-Job application intake	Automated
-Resume analysis	AI-assisted
-Resume + JD comparison	AI
-Evidence extraction	AI
-Missing evidence detection	Agent
-Clarification questions	Agent
-Candidate communication	Automated
-Candidate state tracking	Automated
-AI recommendation	AI
-Final hiring decision	Human
-Interview workflow	Automated
-HR notifications	Automated
-Project Structure
-RecruitFlow-Agent/
-│
-├── app/
-│   ├── main.py
-│   ├── agent.py
-│   ├── db.py
-│   └── ...
-│
-├── requirements.txt
-├── .env
-├── credentials.json
-├── README.md
-└── ...
 
-The architecture is being developed modularly so that agent logic, APIs, state management, tools, and frontend applications remain maintainable and independently testable.
+Job application intake: Automated
+
+Resume analysis: AI-assisted
+
+Resume and JD comparison: AI
+
+Evidence extraction: AI
+
+Missing evidence detection: Agent
+
+Clarification questions: Agent
+
+Candidate communication: Automated
+
+Candidate state tracking: Automated
+
+AI recommendation: AI
+
+Final hiring decision: Human
+
+Interview workflow: Automated
+
+HR notification: Automated
+
+Project Structure
+
+RecruitFlow-Agent/
+
+app/
+main.py
+agent.py
+db.py
+...
+
+requirements.txt
+.env
+credentials.json
+README.md
+
+The architecture is being developed modularly so that APIs, agent logic, state management, tools, and frontend applications remain maintainable and independently testable.
 
 Local Development
-Prerequisites
+
+Prerequisites:
+
 Python
-Google Cloud project
+Google Cloud Project
 Gemini access
 Google Cloud credentials
 n8n instance for external automation
-Clone
-git clone <YOUR_REPOSITORY_URL>
-cd RecruitFlow-Agent
-Create Virtual Environment
-python -m venv myenv
-Activate on Windows
-myenv\Scripts\activate
-Install Dependencies
-pip install -r requirements.txt
-Environment Configuration
 
-Create a .env file containing the required configuration.
+Clone the repository:
+
+git clone <YOUR_REPOSITORY_URL>
+
+cd RecruitFlow-Agent
+
+Create a virtual environment:
+
+python -m venv myenv
+
+Activate on Windows:
+
+myenv\Scripts\activate
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+Create a .env file with the required configuration.
 
 Example:
 
 GOOGLE_CLOUD_PROJECT=your-project-id
 GOOGLE_APPLICATION_CREDENTIALS=credentials.json
 
-Never commit .env or private credentials to GitHub.
+Never commit credentials or environment secrets to GitHub.
 
-Run the API
+Run the API:
+
 uvicorn app.main:app --reload
 
-The local API will be available at:
+The API will be available at:
 
 http://127.0.0.1:8000
 
 Interactive API documentation:
 
 http://127.0.0.1:8000/docs
+
 Development Roadmap
+
 Foundation
- Project repository
- FastAPI backend
- Local development environment
- Initial API foundation
- Initial database integration
+
+[x] Project repository setup
+[x] FastAPI backend foundation
+[x] Local development environment
+[x] Initial API foundation
+[x] Initial database integration
+
 Agent Intelligence
- Gemini integration
- Google ADK coordinator agent
- Structured evaluation schema
- Resume + JD analysis
- Evidence extraction
- Missing-evidence detection
+
+[ ] Gemini integration
+[ ] Google ADK coordinator agent
+[ ] Structured evaluation
+[ ] Resume and JD analysis
+[ ] Evidence extraction
+[ ] Missing-evidence detection
+
 Autonomous Workflow
- Dynamic clarification questions
- Candidate reply handling
- Persistent candidate state
- Re-evaluation loop
- Agent communication tools
- Human approval workflow
+
+[ ] Dynamic clarification questions
+[ ] Candidate reply handling
+[ ] Persistent candidate state
+[ ] Re-evaluation loop
+[ ] Communication tools
+[ ] Human approval workflow
+
 Product Experience
- Candidate Portal
- HR Dashboard
- Job management
- Candidate management
- AI recommendation interface
- Interview workflow
-Cloud & Production
- Google Cloud Storage
- Cloud Run deployment
- Production n8n integration
- Reliability and idempotency
- Authentication and access control
- Observability and logging
- End-to-end testing
+
+[ ] Candidate Portal
+[ ] HR Dashboard
+[ ] Job management
+[ ] Candidate management
+[ ] AI recommendation interface
+[ ] Interview workflow
+
+Cloud and Production
+
+[ ] Google Cloud Storage
+[ ] Cloud Run deployment
+[ ] Production n8n integration
+[ ] Reliability and idempotency
+[ ] Authentication and access control
+[ ] Observability and logging
+[ ] End-to-end testing
+
 Design Principles
-1. Automate the work
+Automate the work
 
 Routine operational tasks should require as little manual effort as possible.
 
-2. Preserve human judgment
+Preserve human judgment
 
-AI recommendations should support HR decisions, not replace them.
+AI recommendations support HR decisions rather than replacing them.
 
-3. Evidence over assumptions
+Evidence over assumptions
 
 The system should distinguish between demonstrated skills, missing information, and unverified claims.
 
-4. State over statelessness
+State over statelessness
 
 Candidate journeys continue over time, so their state must persist.
 
-5. Agentic behavior
+Agentic behavior
 
-The system should determine what needs to happen next instead of simply responding to individual prompts.
+The system should determine what needs to happen next rather than simply responding to individual prompts.
 
-6. Clear separation of responsibilities
+Clear separation of responsibilities
 
-Reasoning, state, external actions, and user interfaces should remain modular.
+Reasoning, state, external actions, and user interfaces remain modular.
 
-7. Reliability matters
+Reliability matters
 
-A recruitment system should not send duplicate emails, lose candidate state, or create inconsistent statuses.
+The system should avoid duplicate communications, lost candidate state, and inconsistent workflow statuses.
 
-The Vision
+Vision
 
 Recruiters should not have to spend their day chasing emails, updating spreadsheets, reviewing repetitive applications, and manually tracking every small step of the hiring process.
 
@@ -857,16 +710,16 @@ Hackathon
 
 Built for the All Things Agentic Hackathon
 
-Track
+Track: Taskmaster
 
-Taskmaster
-
-Project Focus
-
-An agent that takes ownership of a real-world operational workflow rather than simply answering questions.
+Focus: Building an agent that takes ownership of a real-world operational workflow rather than simply answering questions.
 
 Author
 
 Noor Fatima
 
-Software Engineering student and AI/Data Science builder focused on building practical, agentic systems that solve real-world problems.
+Software Engineering and AI/Data Science builder focused on building practical, agentic systems that solve real-world problems.
+
+License
+
+This project is currently being developed as a hackathon project.
