@@ -292,4 +292,171 @@ flowchart LR
     E --> F[Application Processing]
     F --> G[Recruitment Communication]
 ```
+---
+# HR Dashboard
+
+The HR Dashboard acts as the central control center for the recruitment process.
+
+The goal is to give HR complete visibility without overwhelming the recruiter with unnecessary complexity.
+
+## Job Management
+
+##### HR can:
+
+Create new job listings
+Edit job listings
+Delete job listings
+Activate or deactivate positions
+View all available positions
+View the number of applicants per position
+
+## Candidate Management
+
+For every position, HR can access:
+
+Candidate name
+Contact information
+Resume
+Applied position
+Skills
+Experience
+Candidate responses
+Evaluation results
+Supporting evidence
+Missing information
+AI recommendation
+Confidence
+Candidate status
+Interview status
+HR Decision Making
+
+The AI recommendation is presented as decision support rather than an automated hiring decision.
+
+Example:
+```text
+Candidate: Sarah Ahmed
+Position: AI Engineer
+
+Overall Fit: Strong
+
+Confidence: 91%
+
+Required Skills
+
+Python
+Evidence Found
+
+Machine Learning
+Evidence Found
+
+FastAPI
+Evidence Found
+
+SQL
+Evidence Found
+
+Kubernetes
+Insufficient Evidence
+
+AI Recommendation
+
+ADVANCE
+
+--------------------------------
+
+HR Decision
+
+[ Select Candidate ]    [ Reject Candidate ]
+```
+---
+
+The AI provides the recommendation.
+
+HR makes the decision.
+
+# Human-in-the-Loop Decision Model
+
+RecruitFlow is explicitly designed to preserve human control over consequential hiring decisions.
+
+The agent can:
+
+Analyze candidates
+Extract evidence
+Identify missing information
+Ask clarification questions
+Maintain candidate state
+Re-evaluate candidates
+Generate recommendations
+Trigger operational workflows
+
+However, the final candidate selection remains with HR.
+
+```mermaid
+flowchart TD
+
+    A[Candidate Evaluation]
+    B[AI Recommendation]
+    C[HR Review]
+    D{HR Decision}
+
+    A --> B
+    B --> C
+    C --> D
+
+    D -->|Select| E[Interview Workflow]
+    D -->|Reject| F[Rejection Workflow]
+```
+
+---
+This creates a clear separation between:
+
+```text
+AI Assistance
+      |
+      v
+Human Judgment
+      |
+      v
+Operational Automation
+```
+
+---
+# Intelligent Resume Evaluation
+
+RecruitFlow evaluates candidates against the specific job they applied for.
+
+The evaluation considers:
+
+Required skills
+Preferred skills
+Relevant experience
+Resume evidence
+Candidate responses
+Missing information
+Unverified claims
+Role-specific requirements
+Confidence
+
+Instead of relying only on a numerical score, RecruitFlow is designed to provide evidence-based evaluation.
+
+Example:
+
+```text
+Python
+Evidence Found
+
+Machine Learning
+Evidence Found
+
+FastAPI
+Evidence Found
+
+Cloud Deployment
+Evidence Found
+
+Kubernetes
+Insufficient Evidence
+```
+---
+This gives HR more context about why a recommendation was generated.
 
