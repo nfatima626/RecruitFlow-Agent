@@ -165,8 +165,8 @@ flowchart TB
 | Cloud Run            | Backend deployment                                                   |
 ---
 
----
 ## End-to-End Recruitment Workflow
+
 ---
 
 ```mermaid
@@ -209,4 +209,50 @@ flowchart TD
     P --> R[Update Candidate Status]
 
     Q --> R
+```
+--- 
+# Agentic Workflow
+
+The core difference between RecruitFlow and a traditional AI screening system is its ability to continue working across multiple stages.
+
+A traditional system may perform:
+
+```text
+Resume -> Evaluation -> Score
+```
+---
+
+RecruitFlow is designed around:
+
+--- 
+
+```text
+Application
+     |
+     v
+Evaluation
+     |
+     v
+Evidence Analysis
+     |
+     v
+Missing Information
+     |
+     v
+Candidate Clarification
+     |
+     v
+New Evidence
+     |
+     v
+Re-evaluation
+     |
+     v
+HR Recommendation
+     |
+     v
+Human Decision
+     |
+     v
+Operational Workflow
 ```
