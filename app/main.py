@@ -1,30 +1,48 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Form, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 from app.agent import evaluate_candidate_resume
 from app.db import (
     create_job_listing,
     get_all_jobs,
+    delete_job_listing,
+    update_job_listing,
     save_candidate_application,
     get_candidates_for_job,
     update_candidate_status
 )
 import os
+import pdfplumber
+import tempfile
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = FastAPI(title="RecruitFlow Agent API", version="1.0.0")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Request Models
 class JobCreateRequest(BaseModel):
     title: str
     description: str
+    department: Optional[str] = ""
+    location: Optional[str] = ""
+    employment_type: Optional[str] = ""
 
-class CandidateApplyRequest(BaseModel):
-    job_id: str
-    candidate_name: str
-    email: str
-    resume_text: str
+class JobUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    department: Optional[str] = None
+    location: Optional[str] = None
+    employment_type: Optional[str] = None
 
 class StatusUpdateRequest(BaseModel):
     status: str  # SELECTED or REJECTED
@@ -37,7 +55,13 @@ def read_root():
 @app.post("/api/jobs")
 def api_create_job(payload: JobCreateRequest):
     try:
-        job = create_job_listing(payload.title, payload.description)
+        job = create_job_listing(
+            payload.title, 
+            payload.description, 
+            payload.department, 
+            payload.location, 
+            payload.employment_type
+        )
         return {"status": "success", "job": job}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -50,31 +74,100 @@ def api_get_jobs():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.put("/api/jobs/{job_id}")
+def api_update_job(job_id: str, payload: JobUpdateRequest):
+    try:
+        data_to_update = {k: v for k, v in payload.dict().items() if v is not None}
+        updated_job = update_job_listing(job_id, data_to_update)
+        if not updated_job:
+            raise HTTPException(status_code=404, detail="Job not found.")
+        return {"status": "success", "job": updated_job}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/jobs/{job_id}")
+def api_delete_job(job_id: str):
+    try:
+        success = delete_job_listing(job_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Job not found.")
+        return {"status": "success", "message": "Job deleted successfully."}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # --- Candidate Application & AI Evaluation Endpoint ---
 @app.post("/api/apply")
-def api_apply_candidate(payload: CandidateApplyRequest):
+async def api_apply_candidate(
+    job_id: str = Form(...),
+    candidate_name: str = Form(...),
+    email: str = Form(...),
+    phone: str = Form(""),
+    linkedin: str = Form(""),
+    portfolio: str = Form(""),
+    years_experience: str = Form(""),
+    current_company: str = Form(""),
+    desired_role: str = Form(""),
+    why_join: str = Form(""),
+    resume: UploadFile = File(...)
+):
     try:
         # 1. Fetch job description to evaluate against
         jobs = get_all_jobs()
-        target_job = next((j for j in jobs if j["job_id"] == payload.job_id), None)
+        target_job = next((j for j in jobs if j["job_id"] == job_id), None)
         
         if not target_job:
             raise HTTPException(status_code=404, detail="Job listing not found.")
         
-        # 2. Run Gemini Evaluation Agent
-        evaluation = evaluate_candidate_resume(target_job["description"], payload.resume_text)
+        # 2. Extract Text from PDF
+        resume_text = ""
+        # Write to temporary file
+        fd, temp_path = tempfile.mkstemp()
+        try:
+            with os.fdopen(fd, 'wb') as f:
+                f.write(await resume.read())
+            
+            if resume.filename.lower().endswith(".pdf"):
+                with pdfplumber.open(temp_path) as pdf:
+                    for page in pdf.pages:
+                        page_text = page.extract_text()
+                        if page_text:
+                            resume_text += page_text + "\n"
+            else:
+                # Try decoding as plain text if not PDF
+                with open(temp_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    resume_text = f.read()
+        finally:
+            os.remove(temp_path)
+
+        if not resume_text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract text from the provided resume file.")
+
+        # 3. Run Gemini Evaluation Agent
+        evaluation = evaluate_candidate_resume(target_job["description"], resume_text)
         
-        # 3. Save candidate application along with AI evaluation to Firestore
+        # 4. Save candidate application
         saved_application = save_candidate_application(
-            job_id=payload.job_id,
-            candidate_name=payload.candidate_name,
-            email=payload.email,
-            resume_text=payload.resume_text,
+            job_id=job_id,
+            candidate_name=candidate_name,
+            email=email,
+            phone=phone,
+            linkedin=linkedin,
+            portfolio=portfolio,
+            years_experience=years_experience,
+            current_company=current_company,
+            desired_role=desired_role,
+            why_join=why_join,
+            resume_text=resume_text,
             evaluation=evaluation
         )
         
         return {"status": "success", "application": saved_application}
     except Exception as e:
+        print(f"Error applying candidate: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # --- HR Dashboard Review Endpoints ---
