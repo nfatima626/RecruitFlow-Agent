@@ -79,5 +79,3 @@ AI Score
    |
    v
 Accept / Reject
-
-
