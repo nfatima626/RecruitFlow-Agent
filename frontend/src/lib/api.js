@@ -46,4 +46,9 @@ export const updateCandidateStatus = async (candidateId, status) => {
   return response.data;
 };
 
+export const deleteCandidate = async (candidateId) => {
+  const response = await api.delete(`/candidates/${candidateId}`);
+  return response.data;
+};
+
 export default api;

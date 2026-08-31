@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchJobs, createJob, updateJob, deleteJob, fetchCandidatesForJob, updateCandidateStatus } from '../lib/api';
+import { fetchJobs, createJob, updateJob, deleteJob, fetchCandidatesForJob, updateCandidateStatus, deleteCandidate } from '../lib/api';
 import { Users, Filter, CheckCircle2, XCircle, ChevronRight, UserCircle2, PlusCircle, LayoutList, Briefcase, Trash2, Edit2, Loader2 } from 'lucide-react';
 
 const StatusBadge = ({ status }) => {
@@ -15,6 +15,35 @@ const StatusBadge = ({ status }) => {
   );
 };
 
+const RecommendationBadge = ({ recommendation, score }) => {
+  if (!recommendation) return null;
+  
+  let label = recommendation;
+  let style = 'bg-slate-100 text-slate-800 border-slate-200';
+  
+  if (recommendation === 'ADVANCE') {
+    if (score >= 90) {
+      label = 'Fast-Track';
+      style = 'bg-emerald-100 text-emerald-800 border-emerald-300 font-extrabold shadow-sm ring-1 ring-emerald-500/20';
+    } else {
+      label = 'Shortlist';
+      style = 'bg-green-100 text-green-800 border-green-200';
+    }
+  } else if (recommendation === 'REQUEST_EVIDENCE') {
+    label = 'Needs Clarification';
+    style = 'bg-amber-100 text-amber-800 border-amber-200';
+  } else if (recommendation === 'REJECT') {
+    label = 'Not a Match';
+    style = 'bg-rose-100 text-rose-800 border-rose-200';
+  }
+
+  return (
+    <div className={`px-3 py-1.5 rounded-lg border text-[11px] uppercase tracking-wider ${style}`}>
+      {label}
+    </div>
+  );
+};
+
 const HRDashboard = () => {
   const [activeTab, setActiveTab] = useState('review'); // 'post', 'manage', 'review'
   
@@ -23,6 +52,7 @@ const HRDashboard = () => {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState({ jobs: true, candidates: false, action: false });
+  const [globalStats, setGlobalStats] = useState({ activeJobs: 0, pending: 0, shortlisted: 0 });
 
   // Post/Edit Job Form State
   const [jobForm, setJobForm] = useState({ title: '', description: '', department: '', location: '', employment_type: '' });
@@ -30,12 +60,38 @@ const HRDashboard = () => {
 
   useEffect(() => { loadJobs(); }, []);
   useEffect(() => {
+    let intervalId;
     if (activeTab === 'review' && selectedJobId) {
-      loadCandidates(selectedJobId);
+      loadCandidates(selectedJobId, false);
+      intervalId = setInterval(() => {
+        loadCandidates(selectedJobId, true);
+      }, 5000);
     } else {
       setCandidates([]);
     }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [selectedJobId, activeTab]);
+
+  useEffect(() => {
+    if (jobs.length > 0) {
+      const fetchAllStats = async () => {
+        try {
+          const allCandidates = await Promise.all(jobs.map(j => fetchCandidatesForJob(j.job_id)));
+          const flat = allCandidates.flat();
+          const pending = flat.filter(c => c.status === 'PENDING').length;
+          const shortlisted = flat.filter(c => c.status === 'SELECTED' || c.evaluation?.recommendation === 'ADVANCE').length;
+          setGlobalStats({ activeJobs: jobs.length, pending, shortlisted });
+        } catch (e) {
+          setGlobalStats({ activeJobs: jobs.length, pending: 0, shortlisted: 0 });
+        }
+      };
+      fetchAllStats();
+    } else {
+      setGlobalStats({ activeJobs: 0, pending: 0, shortlisted: 0 });
+    }
+  }, [jobs]);
 
   const loadJobs = async () => {
     setLoading(p => ({ ...p, jobs: true }));
@@ -46,13 +102,13 @@ const HRDashboard = () => {
     finally { setLoading(p => ({ ...p, jobs: false })); }
   };
 
-  const loadCandidates = async (jobId) => {
-    setLoading(p => ({ ...p, candidates: true }));
+  const loadCandidates = async (jobId, silent = false) => {
+    if (!silent) setLoading(p => ({ ...p, candidates: true }));
     try {
       const data = await fetchCandidatesForJob(jobId);
       setCandidates(data || []);
     } catch (error) { console.error("Failed to load candidates", error); } 
-    finally { setLoading(p => ({ ...p, candidates: false })); }
+    finally { if (!silent) setLoading(p => ({ ...p, candidates: false })); }
   };
 
   const handleStatusUpdate = async (candidateId, newStatus) => {
@@ -62,6 +118,16 @@ const HRDashboard = () => {
     } catch (error) {
       alert("Failed to update candidate status.");
     }
+  };
+
+  const handleDeleteCandidate = async (candidateId) => {
+    if(!window.confirm("Are you sure you want to delete this candidate?")) return;
+    setLoading(p => ({ ...p, action: true }));
+    try {
+      await deleteCandidate(candidateId);
+      setCandidates(candidates.filter(c => c.candidate_id !== candidateId));
+    } catch (error) { alert("Failed to delete candidate"); }
+    finally { setLoading(p => ({ ...p, action: false })); }
   };
 
   const handleJobSubmit = async (e) => {
@@ -205,28 +271,61 @@ const HRDashboard = () => {
 
         {/* --- REVIEW CANDIDATES VIEW --- */}
         {activeTab === 'review' && (
-          <div className="flex flex-col md:flex-row h-full">
+          <div className="flex flex-col md:flex-row h-full bg-slate-50/50">
             {/* Job Filter Sidebar (Inner) */}
-            <div className="w-full md:w-1/3 border-r border-slate-100 bg-slate-50/50 flex flex-col">
-              <div className="p-4 border-b border-slate-100 flex items-center font-semibold text-slate-700">
-                <Filter className="w-4 h-4 mr-2 text-indigo-500" /> Filter by Job
+            <div className="w-full md:w-[320px] bg-white border-r border-slate-200 flex flex-col z-10 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
+              <div className="p-6 border-b border-slate-100 flex items-center font-bold text-slate-800">
+                <Filter className="w-5 h-5 mr-3 text-indigo-500" /> Filter by Job Role
               </div>
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {jobs.map(job => (
-                  <button key={job.job_id} onClick={() => setSelectedJobId(job.job_id)} className={`w-full text-left px-5 py-4 transition-colors border-b border-slate-100 flex items-center justify-between ${selectedJobId === job.job_id ? 'bg-white border-l-4 border-l-indigo-500' : 'hover:bg-white'}`}>
-                    <span className={`truncate pr-2 ${selectedJobId === job.job_id ? 'font-bold text-slate-900' : 'font-medium text-slate-600'}`}>{job.title}</span>
-                    {selectedJobId === job.job_id && <ChevronRight className="w-4 h-4 text-indigo-500 flex-shrink-0" />}
+                  <button key={job.job_id} onClick={() => setSelectedJobId(job.job_id)} className={`w-full text-left px-5 py-4 rounded-2xl transition-all border flex items-center justify-between ${selectedJobId === job.job_id ? 'bg-indigo-50 border-indigo-200 shadow-sm' : 'bg-white border-slate-100 hover:border-slate-200 hover:bg-slate-50 shadow-sm'}`}>
+                    <span className={`truncate pr-2 ${selectedJobId === job.job_id ? 'font-bold text-indigo-900' : 'font-medium text-slate-600'}`}>{job.title}</span>
+                    {selectedJobId === job.job_id && <ChevronRight className="w-5 h-5 text-indigo-500 flex-shrink-0" />}
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Candidate Grid */}
-            <div className="flex-1 p-6 overflow-y-auto bg-slate-50/30">
+            <div className="flex-1 p-8 overflow-y-auto">
               {!selectedJobId ? (
-                <div className="h-full flex flex-col items-center justify-center text-slate-400">
-                  <Users className="w-12 h-12 mb-4 text-slate-200" />
-                  <p>Select a job to view applicants</p>
+                <div className="h-full flex flex-col pb-10">
+                  <div className="mb-10 max-w-2xl">
+                    <h2 className="text-3xl font-extrabold text-slate-900 mb-4">Welcome to RecruitFlow Control Center</h2>
+                    <p className="text-lg text-slate-500 leading-relaxed">Select a job role from the left sidebar to review AI-evaluated candidates, track scores, and manage your hiring workflows effortlessly.</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col transition-transform hover:-translate-y-1">
+                      <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-5">
+                        <Briefcase className="w-6 h-6" />
+                      </div>
+                      <span className="text-4xl font-black text-slate-900 mb-2">{globalStats.activeJobs}</span>
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Active Jobs</span>
+                    </div>
+                    
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col transition-transform hover:-translate-y-1">
+                      <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-5">
+                        <Users className="w-6 h-6" />
+                      </div>
+                      <span className="text-4xl font-black text-slate-900 mb-2">{globalStats.pending}</span>
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pending Reviews</span>
+                    </div>
+                    
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col transition-transform hover:-translate-y-1">
+                      <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-5">
+                        <CheckCircle2 className="w-6 h-6" />
+                      </div>
+                      <span className="text-4xl font-black text-slate-900 mb-2">{globalStats.shortlisted}</span>
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Shortlisted Candidates</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 bg-gradient-to-br from-indigo-50 to-white rounded-3xl border-2 border-dashed border-indigo-100/70 flex flex-col items-center justify-center text-indigo-300 min-h-[300px]">
+                    <LayoutList className="w-20 h-20 mb-6 opacity-40 text-indigo-400" />
+                    <p className="font-semibold text-indigo-400/80 text-lg">Awaiting your selection...</p>
+                  </div>
                 </div>
               ) : loading.candidates ? (
                 <div className="space-y-4">{[1,2].map(i => <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />)}</div>
@@ -236,7 +335,6 @@ const HRDashboard = () => {
                 <div className="space-y-6">
                   {candidates.map(candidate => {
                     const ai = candidate.evaluation || {};
-                    const scores = ai.scores || {};
                     return (
                       <div key={candidate.candidate_id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                         <div className="p-5 border-b border-slate-100 flex justify-between items-start bg-slate-50/50">
@@ -253,34 +351,51 @@ const HRDashboard = () => {
                               </div>
                             </div>
                           </div>
-                          <StatusBadge status={candidate.status} />
+                          <div className="flex items-center gap-3">
+                            <StatusBadge status={candidate.status} />
+                            <button onClick={() => handleDeleteCandidate(candidate.candidate_id)} disabled={loading.action} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete Candidate">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
                         
                         <div className="p-5">
                           <div className="flex items-center justify-between mb-4">
                             <h4 className="text-sm font-bold text-slate-900">AI Evaluation</h4>
-                            <span className={`text-lg font-bold ${ai.overall_score >= 80 ? 'text-green-600' : ai.overall_score >= 60 ? 'text-amber-500' : 'text-red-500'}`}>
-                              {ai.overall_score || 0}/100
+                            <span className={`text-lg font-bold ${ai.score >= 80 ? 'text-green-600' : ai.score >= 60 ? 'text-amber-500' : 'text-red-500'}`}>
+                              {ai.score || 0}/100
                             </span>
                           </div>
                           
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-                            {Object.entries(scores).map(([key, value]) => (
-                              <div key={key} className="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
-                                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{key}</span>
-                                <div className="flex items-center gap-2">
-                                  <div className="h-1.5 flex-1 bg-slate-200 rounded-full overflow-hidden">
-                                    <div className={`h-full rounded-full ${value >= 8 ? 'bg-green-500' : value >= 6 ? 'bg-amber-400' : 'bg-red-400'}`} style={{ width: `${(value / 10) * 100}%` }} />
-                                  </div>
-                                  <span className="text-xs font-bold text-slate-700">{value}</span>
-                                </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                              <span className="text-[10px] uppercase font-bold text-slate-400 block mb-2">Verified Skills</span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {ai.verified_skills?.length > 0 ? ai.verified_skills.map((skill, i) => (
+                                  <span key={i} className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md">{skill}</span>
+                                )) : <span className="text-xs text-slate-400">None found</span>}
                               </div>
-                            ))}
+                            </div>
+                            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                              <span className="text-[10px] uppercase font-bold text-slate-400 block mb-2">Missing Evidence</span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {ai.missing_evidence?.length > 0 ? ai.missing_evidence.map((skill, i) => (
+                                  <span key={i} className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-md">{skill}</span>
+                                )) : <span className="text-xs text-slate-400">None missing</span>}
+                              </div>
+                            </div>
                           </div>
                           
-                          <div className="bg-slate-50 p-4 rounded-xl text-sm text-slate-600 border border-slate-100">
-                            <strong>Summary:</strong> {ai.qualitative_summary || "No summary provided."}
+                          <div className="bg-slate-50 p-4 rounded-xl text-sm text-slate-600 border border-slate-100 mb-4">
+                            <strong>Summary:</strong> {ai.summary || "No summary provided."}
                           </div>
+
+                          {ai.recommendation && (
+                            <div className="bg-slate-50 p-4 rounded-xl text-sm text-slate-800 border border-slate-100 mb-4 font-medium flex items-center justify-between">
+                              <strong>Recommendation:</strong> 
+                              <RecommendationBadge recommendation={ai.recommendation} score={ai.score} />
+                            </div>
+                          )}
                           
                           {candidate.why_join && (
                             <div className="mt-4 text-sm text-slate-600">

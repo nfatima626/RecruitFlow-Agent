@@ -99,13 +99,17 @@ const CandidatePortal = () => {
   return (
     <div className="relative min-h-screen pb-12">
       {/* Job Grid Header */}
-      <div className="text-center max-w-2xl mx-auto mb-12 mt-8">
-        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-          Join Our Mission
-        </h1>
-        <p className="text-lg text-slate-500">
-          Discover open roles and help us build the future of AI-powered operations.
-        </p>
+      <div className="relative overflow-hidden bg-slate-900 rounded-3xl mx-4 mt-6 mb-12 py-20 px-8 text-center shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 mix-blend-overlay"></div>
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <span className="inline-block py-1.5 px-4 rounded-full bg-indigo-500/20 text-indigo-200 text-xs font-bold tracking-wider uppercase mb-6 border border-indigo-400/20">Fast-Track Hiring Process</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+            Build the Future of <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Intelligent Systems</span>
+          </h1>
+          <p className="text-lg text-slate-300 font-medium leading-relaxed max-w-2xl mx-auto">
+            Experience our lightning-fast, AI-driven application process. Submit your profile in seconds and let our autonomous agents fast-track your journey.
+          </p>
+        </div>
       </div>
 
       {/* Job Grid Listings */}
@@ -226,63 +230,107 @@ const CandidatePortal = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className={`space-y-6 flex-1 ${submitStatus.status === 'success' ? 'hidden' : ''}`}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Full Name <span className="text-red-500">*</span></label>
-                    <input type="text" name="candidate_name" required value={formData.candidate_name} onChange={handleInputChange} className="w-full rounded-lg border-slate-300 border p-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="Jane Doe" />
+              <form onSubmit={handleSubmit} className={`space-y-10 flex-1 ${submitStatus.status === 'success' ? 'hidden' : ''}`}>
+                
+                {/* Section 1: Personal Details */}
+                <div>
+                  <div className="flex items-center mb-6">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold mr-3 shadow-sm">1</div>
+                    <h4 className="text-xl font-bold text-slate-900">Personal Details</h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name <span className="text-red-500">*</span></label>
+                      <input type="text" name="candidate_name" required value={formData.candidate_name} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="Jane Doe" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address <span className="text-red-500">*</span></label>
+                      <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="jane@example.com" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
+                      <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="+1 (555) 000-0000" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Desired Role</label>
+                      <input type="text" value={selectedJob.title} disabled className="w-full rounded-xl border-slate-200 bg-slate-100 border p-3.5 text-slate-500 cursor-not-allowed font-medium" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 2: Professional Background */}
+                <div>
+                  <div className="flex items-center mb-6">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold mr-3 shadow-sm">2</div>
+                    <h4 className="text-xl font-bold text-slate-900">Professional Background</h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">LinkedIn Profile</label>
+                      <input type="url" name="linkedin" value={formData.linkedin} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="https://linkedin.com/in/..." />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Portfolio Website</label>
+                      <input type="url" name="portfolio" value={formData.portfolio} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="https://..." />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Years of Experience</label>
+                      <input type="number" name="years_experience" value={formData.years_experience} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="e.g. 5" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Current Company</label>
+                      <input type="text" name="current_company" value={formData.current_company} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="Company Inc." />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email Address <span className="text-red-500">*</span></label>
-                    <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-slate-300 border p-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="jane@example.com" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Phone Number</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full rounded-lg border-slate-300 border p-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="+1 (555) 000-0000" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Desired Role</label>
-                    <input type="text" value={selectedJob.title} disabled className="w-full rounded-lg border-slate-200 bg-slate-50 border p-2.5 text-slate-500 cursor-not-allowed" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">LinkedIn Profile</label>
-                    <input type="url" name="linkedin" value={formData.linkedin} onChange={handleInputChange} className="w-full rounded-lg border-slate-300 border p-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="https://linkedin.com/in/..." />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Portfolio Website</label>
-                    <input type="url" name="portfolio" value={formData.portfolio} onChange={handleInputChange} className="w-full rounded-lg border-slate-300 border p-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="https://..." />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Years of Experience</label>
-                    <input type="number" name="years_experience" value={formData.years_experience} onChange={handleInputChange} className="w-full rounded-lg border-slate-300 border p-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="e.g. 5" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">Current Company</label>
-                    <input type="text" name="current_company" value={formData.current_company} onChange={handleInputChange} className="w-full rounded-lg border-slate-300 border p-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all" placeholder="Company Inc." />
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Why do you want to join us?</label>
+                    <textarea 
+                      name="why_join"
+                      value={formData.why_join}
+                      onChange={handleInputChange}
+                      rows="3"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border p-4 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all resize-y"
+                      placeholder="Tell us a little bit about your motivation..."
+                    ></textarea>
                   </div>
                 </div>
                 
+                {/* Section 3: Resume Upload */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Resume / CV (PDF) <span className="text-red-500">*</span></label>
-                  <input 
-                    type="file" 
-                    accept=".pdf,.docx" 
-                    required
-                    onChange={handleFileChange}
-                    className="w-full rounded-lg border-slate-300 border border-dashed p-4 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all bg-slate-50 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Why do you want to join us?</label>
-                  <textarea 
-                    name="why_join"
-                    value={formData.why_join}
-                    onChange={handleInputChange}
-                    rows="3"
-                    className="w-full rounded-lg border-slate-300 border p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all resize-y"
-                    placeholder="Tell us a little bit about your motivation..."
-                  ></textarea>
+                  <div className="flex items-center mb-6">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold mr-3 shadow-sm">3</div>
+                    <h4 className="text-xl font-bold text-slate-900">Resume Upload <span className="text-red-500">*</span></h4>
+                  </div>
+                  
+                  <div className="relative">
+                    <input 
+                      type="file" 
+                      accept=".pdf,.docx" 
+                      required={!resumeFile}
+                      onChange={handleFileChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className={`w-full rounded-2xl border-2 border-dashed ${resumeFile ? 'border-indigo-500 bg-indigo-50/50' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-indigo-300'} p-10 flex flex-col items-center justify-center text-center transition-all duration-200`}>
+                      {resumeFile ? (
+                        <>
+                          <div className="w-16 h-16 bg-white shadow-sm rounded-full flex items-center justify-center mb-4 text-indigo-600 ring-4 ring-indigo-50">
+                            <CheckCircle2 className="w-8 h-8" />
+                          </div>
+                          <h4 className="text-lg font-bold text-indigo-900 mb-1">{resumeFile.name}</h4>
+                          <p className="text-sm text-indigo-600/80 font-medium">File attached successfully. Click or drag to replace.</p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-16 h-16 bg-white shadow-sm border border-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
+                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                          </div>
+                          <h4 className="text-lg font-bold text-slate-900 mb-1">Upload your resume</h4>
+                          <p className="text-sm text-slate-500 mb-5">Drag and drop your PDF or DOCX file here</p>
+                          <span className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 shadow-sm transition-colors group-hover:border-indigo-300 group-hover:text-indigo-600">Browse Files</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 mt-6">
