@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchJobs, createJob, updateJob, deleteJob, fetchCandidatesForJob, updateCandidateStatus, deleteCandidate } from '../lib/api';
-import { Users, Filter, CheckCircle2, XCircle, ChevronRight, UserCircle2, PlusCircle, LayoutList, Briefcase, Trash2, Edit2, Loader2 } from 'lucide-react';
+import { Users, Filter, CheckCircle2, XCircle, ChevronRight, UserCircle2, PlusCircle, LayoutList, Briefcase, Trash2, Edit2, Loader2, ArrowLeft, Inbox } from 'lucide-react';
 
 const StatusBadge = ({ status }) => {
   const styles = {
@@ -57,8 +57,15 @@ const HRDashboard = () => {
   // Post/Edit Job Form State
   const [jobForm, setJobForm] = useState({ title: '', description: '', department: '', location: '', employment_type: '' });
   const [editingJob, setEditingJob] = useState(null);
+  
+  // Status Update Loading State
+  const [updatingStatus, setUpdatingStatus] = useState({});
 
-  useEffect(() => { loadJobs(); }, []);
+  useEffect(() => { 
+    loadJobs(); 
+    const interval = setInterval(() => loadJobs(true), 5000);
+    return () => clearInterval(interval);
+  }, []);
   useEffect(() => {
     let intervalId;
     if (activeTab === 'review' && selectedJobId) {
@@ -93,13 +100,13 @@ const HRDashboard = () => {
     }
   }, [jobs]);
 
-  const loadJobs = async () => {
-    setLoading(p => ({ ...p, jobs: true }));
+  const loadJobs = async (silent = false) => {
+    if (!silent) setLoading(p => ({ ...p, jobs: true }));
     try {
       const data = await fetchJobs();
       setJobs(data || []);
     } catch (error) { console.error("Failed to load jobs", error); } 
-    finally { setLoading(p => ({ ...p, jobs: false })); }
+    finally { if (!silent) setLoading(p => ({ ...p, jobs: false })); }
   };
 
   const loadCandidates = async (jobId, silent = false) => {
@@ -112,22 +119,27 @@ const HRDashboard = () => {
   };
 
   const handleStatusUpdate = async (candidateId, newStatus) => {
+    setUpdatingStatus(prev => ({ ...prev, [candidateId]: newStatus }));
     try {
       await updateCandidateStatus(candidateId, newStatus);
-      setCandidates(candidates.map(c => c.candidate_id === candidateId ? { ...c, status: newStatus } : c));
+      setCandidates(prevCandidates => prevCandidates.map(c => c.candidate_id === candidateId ? { ...c, status: newStatus } : c));
     } catch (error) {
       alert("Failed to update candidate status.");
+    } finally {
+      setUpdatingStatus(prev => ({ ...prev, [candidateId]: null }));
     }
   };
 
   const handleDeleteCandidate = async (candidateId) => {
     if(!window.confirm("Are you sure you want to delete this candidate?")) return;
-    setLoading(p => ({ ...p, action: true }));
+    const oldCandidates = [...candidates];
+    setCandidates(candidates.filter(c => c.candidate_id !== candidateId));
     try {
       await deleteCandidate(candidateId);
-      setCandidates(candidates.filter(c => c.candidate_id !== candidateId));
-    } catch (error) { alert("Failed to delete candidate"); }
-    finally { setLoading(p => ({ ...p, action: false })); }
+    } catch (error) { 
+      setCandidates(oldCandidates);
+      alert("Failed to delete candidate"); 
+    }
   };
 
   const handleJobSubmit = async (e) => {
@@ -152,13 +164,16 @@ const HRDashboard = () => {
 
   const handleDeleteJob = async (id) => {
     if(!window.confirm("Are you sure you want to delete this job?")) return;
-    setLoading(p => ({ ...p, action: true }));
+    const oldJobs = [...jobs];
+    if (selectedJobId === id) setSelectedJobId(null);
+    setJobs(jobs.filter(j => j.job_id !== id));
     try {
       await deleteJob(id);
-      if (selectedJobId === id) setSelectedJobId(null);
-      setJobs(jobs.filter(j => j.job_id !== id));
-    } catch (error) { alert("Failed to delete job"); }
-    finally { setLoading(p => ({ ...p, action: false })); }
+    } catch (error) { 
+      setJobs(oldJobs);
+      if (selectedJobId === id) setSelectedJobId(id); // Revert selected if needed
+      alert("Failed to delete job"); 
+    }
   };
 
   const renderSidebar = () => (
@@ -194,20 +209,20 @@ const HRDashboard = () => {
             <form onSubmit={handleJobSubmit} className="space-y-6 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Job Title</label>
-                  <input required type="text" value={jobForm.title} onChange={e => setJobForm({...jobForm, title: e.target.value})} className="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500" placeholder="e.g. Senior Frontend Engineer" />
+                  <label className="block text-sm font-bold text-slate-800 mb-1.5">Job Title</label>
+                  <input required type="text" value={jobForm.title} onChange={e => setJobForm({...jobForm, title: e.target.value})} className="w-full rounded-xl text-slate-900 border-slate-300 border p-3 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-medium" placeholder="e.g. Senior Frontend Engineer" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Department</label>
-                  <input type="text" value={jobForm.department} onChange={e => setJobForm({...jobForm, department: e.target.value})} className="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500" placeholder="e.g. Engineering" />
+                  <label className="block text-sm font-bold text-slate-800 mb-1.5">Department</label>
+                  <input type="text" value={jobForm.department} onChange={e => setJobForm({...jobForm, department: e.target.value})} className="w-full rounded-xl text-slate-900 border-slate-300 border p-3 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-medium" placeholder="e.g. Engineering" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Location</label>
-                  <input type="text" value={jobForm.location} onChange={e => setJobForm({...jobForm, location: e.target.value})} className="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500" placeholder="e.g. Remote, NY" />
+                  <label className="block text-sm font-bold text-slate-800 mb-1.5">Location</label>
+                  <input type="text" value={jobForm.location} onChange={e => setJobForm({...jobForm, location: e.target.value})} className="w-full rounded-xl text-slate-900 border-slate-300 border p-3 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-medium" placeholder="e.g. Remote, NY" />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Employment Type</label>
-                  <select value={jobForm.employment_type} onChange={e => setJobForm({...jobForm, employment_type: e.target.value})} className="w-full rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-bold text-slate-800 mb-1.5">Employment Type</label>
+                  <select value={jobForm.employment_type} onChange={e => setJobForm({...jobForm, employment_type: e.target.value})} className="w-full rounded-xl text-slate-900 border-slate-300 border p-3 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-medium">
                     <option value="">Select Type</option>
                     <option value="Full-time">Full-time</option>
                     <option value="Part-time">Part-time</option>
@@ -216,8 +231,8 @@ const HRDashboard = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Job Description</label>
-                <textarea required rows="6" value={jobForm.description} onChange={e => setJobForm({...jobForm, description: e.target.value})} className="w-full rounded-lg border-slate-300 border p-3 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500" placeholder="Describe the role..."></textarea>
+                <label className="block text-sm font-bold text-slate-800 mb-1.5">Job Description</label>
+                <textarea required rows="8" value={jobForm.description} onChange={e => setJobForm({...jobForm, description: e.target.value})} className="w-full rounded-xl text-slate-900 border-slate-300 border p-4 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-medium" placeholder="Describe the role..."></textarea>
               </div>
               <div className="flex gap-4">
                 <button type="submit" disabled={loading.action} className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium flex items-center transition-colors">
@@ -242,16 +257,25 @@ const HRDashboard = () => {
             </div>
             <div className="flex-1 overflow-auto p-6">
               {loading.jobs ? (
-                <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-16 bg-slate-100 animate-pulse rounded-xl" />)}</div>
+                <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-20 bg-slate-100 animate-pulse rounded-xl" />)}</div>
               ) : jobs.length === 0 ? (
-                <p className="text-slate-500 text-center mt-10">No jobs posted yet.</p>
+                <div className="flex flex-col items-center justify-center text-center mt-12 bg-white p-10 rounded-3xl border border-dashed border-slate-300">
+                  <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                    <Briefcase className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">No active jobs</h3>
+                  <p className="text-slate-600 mb-6">You haven't posted any jobs yet. Create one to start receiving applications.</p>
+                  <button onClick={() => { setActiveTab('post'); setEditingJob(null); setJobForm({ title: '', description: '', department: '', location: '', employment_type: '' }); }} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold flex items-center transition-colors">
+                    <PlusCircle className="w-5 h-5 mr-2" /> Post Your First Job
+                  </button>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {jobs.map(job => (
-                    <div key={job.job_id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-200 transition-colors">
+                    <div key={job.job_id} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-indigo-300 hover:shadow-md transition-all gap-4">
                       <div>
-                        <h3 className="font-bold text-slate-900">{job.title}</h3>
-                        <p className="text-sm text-slate-500">{job.department} • {job.location}</p>
+                        <h3 className="text-lg font-bold text-slate-900 mb-1">{job.title}</h3>
+                        <p className="text-sm font-medium text-slate-600">{job.department} • {job.location} • <span className="text-indigo-600">{job.employment_type}</span></p>
                       </div>
                       <div className="flex gap-2">
                         <button onClick={() => { setEditingJob(job); setJobForm(job); setActiveTab('post'); }} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
@@ -273,7 +297,7 @@ const HRDashboard = () => {
         {activeTab === 'review' && (
           <div className="flex flex-col md:flex-row h-full bg-slate-50/50">
             {/* Job Filter Sidebar (Inner) */}
-            <div className="w-full md:w-[320px] bg-white border-r border-slate-200 flex flex-col z-10 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
+            <div className={`w-full md:w-[320px] bg-white border-r border-slate-200 flex-col z-10 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] ${selectedJobId ? 'hidden md:flex' : 'flex'}`}>
               <div className="p-6 border-b border-slate-100 flex items-center font-bold text-slate-800">
                 <Filter className="w-5 h-5 mr-3 text-indigo-500" /> Filter by Job Role
               </div>
@@ -288,12 +312,12 @@ const HRDashboard = () => {
             </div>
 
             {/* Candidate Grid */}
-            <div className="flex-1 p-8 overflow-y-auto">
+            <div className={`flex-1 p-6 md:p-8 overflow-y-auto ${!selectedJobId ? 'hidden md:block' : 'block'}`}>
               {!selectedJobId ? (
                 <div className="h-full flex flex-col pb-10">
                   <div className="mb-10 max-w-2xl">
                     <h2 className="text-3xl font-extrabold text-slate-900 mb-4">Welcome to RecruitFlow Control Center</h2>
-                    <p className="text-lg text-slate-500 leading-relaxed">Select a job role from the left sidebar to review AI-evaluated candidates, track scores, and manage your hiring workflows effortlessly.</p>
+                    <p className="text-lg text-slate-600 leading-relaxed">Select a job role from the left sidebar to review AI-evaluated candidates, track scores, and manage your hiring workflows effortlessly.</p>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -302,36 +326,50 @@ const HRDashboard = () => {
                         <Briefcase className="w-6 h-6" />
                       </div>
                       <span className="text-4xl font-black text-slate-900 mb-2">{globalStats.activeJobs}</span>
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Active Jobs</span>
+                      <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Total Active Jobs</span>
                     </div>
                     
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col transition-transform hover:-translate-y-1">
-                      <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-5">
+                      <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-5">
                         <Users className="w-6 h-6" />
                       </div>
                       <span className="text-4xl font-black text-slate-900 mb-2">{globalStats.pending}</span>
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pending Reviews</span>
+                      <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Pending Reviews</span>
                     </div>
                     
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col transition-transform hover:-translate-y-1">
-                      <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-5">
+                      <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-5">
                         <CheckCircle2 className="w-6 h-6" />
                       </div>
                       <span className="text-4xl font-black text-slate-900 mb-2">{globalStats.shortlisted}</span>
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Shortlisted Candidates</span>
+                      <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Shortlisted Candidates</span>
                     </div>
                   </div>
                   
-                  <div className="flex-1 bg-gradient-to-br from-indigo-50 to-white rounded-3xl border-2 border-dashed border-indigo-100/70 flex flex-col items-center justify-center text-indigo-300 min-h-[300px]">
-                    <LayoutList className="w-20 h-20 mb-6 opacity-40 text-indigo-400" />
-                    <p className="font-semibold text-indigo-400/80 text-lg">Awaiting your selection...</p>
+                  <div className="flex-1 bg-gradient-to-br from-indigo-50 to-white rounded-3xl border-2 border-dashed border-indigo-200 flex flex-col items-center justify-center text-indigo-400 min-h-[300px]">
+                    <LayoutList className="w-20 h-20 mb-6 opacity-60 text-indigo-400" />
+                    <p className="font-bold text-indigo-500 text-lg">Awaiting your selection...</p>
                   </div>
                 </div>
-              ) : loading.candidates ? (
-                <div className="space-y-4">{[1,2].map(i => <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />)}</div>
-              ) : candidates.length === 0 ? (
-                <div className="text-center text-slate-500 mt-10">No applicants yet.</div>
               ) : (
+                <div className="flex flex-col h-full">
+                  <div className="mb-6 flex items-center">
+                    <button onClick={() => setSelectedJobId(null)} className="flex items-center text-slate-700 hover:text-indigo-700 font-bold bg-white px-5 py-2.5 rounded-xl shadow-sm border border-slate-200 transition-colors">
+                      <ArrowLeft className="w-5 h-5 mr-2" /> Back to Overview
+                    </button>
+                  </div>
+                  
+                  {loading.candidates ? (
+                    <div className="space-y-4">{[1,2].map(i => <div key={i} className="h-48 bg-slate-100 animate-pulse rounded-2xl" />)}</div>
+                  ) : candidates.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-center mt-10 bg-white p-12 rounded-3xl border border-dashed border-slate-300 shadow-sm">
+                      <div className="w-20 h-20 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center mb-6 shadow-inner">
+                        <Inbox className="w-10 h-10" />
+                      </div>
+                      <h3 className="text-2xl font-extrabold text-slate-900 mb-3">No candidates yet</h3>
+                      <p className="text-slate-600 text-lg max-w-md leading-relaxed">This role is currently waiting for applicants. When candidates apply, they will automatically appear here with AI-generated insights.</p>
+                    </div>
+                  ) : (
                 <div className="space-y-6">
                   {candidates.map(candidate => {
                     const ai = candidate.evaluation || {};
@@ -406,11 +444,27 @@ const HRDashboard = () => {
                         </div>
                         
                         <div className="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
-                          <button onClick={() => handleStatusUpdate(candidate.candidate_id, 'REJECTED')} className="flex-1 bg-white hover:bg-red-50 text-red-600 border border-red-200 font-medium py-2 rounded-lg flex items-center justify-center transition-colors text-sm">
-                            <XCircle className="w-4 h-4 mr-2" /> Reject
+                          <button 
+                            onClick={() => handleStatusUpdate(candidate.candidate_id, 'REJECTED')} 
+                            disabled={!!updatingStatus[candidate.candidate_id] || candidate.status === 'REJECTED'}
+                            className={`flex-1 font-medium py-2 rounded-lg flex items-center justify-center transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed ${candidate.status === 'REJECTED' ? 'bg-red-600 text-white border border-red-600' : 'bg-white hover:bg-red-50 text-red-600 border border-red-200'}`}
+                          >
+                            {updatingStatus[candidate.candidate_id] === 'REJECTED' ? (
+                              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
+                            ) : (
+                              <><XCircle className="w-4 h-4 mr-2" /> {candidate.status === 'REJECTED' ? 'Rejected' : 'Reject'}</>
+                            )}
                           </button>
-                          <button onClick={() => handleStatusUpdate(candidate.candidate_id, 'SELECTED')} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg flex items-center justify-center transition-colors text-sm">
-                            <CheckCircle2 className="w-4 h-4 mr-2" /> Select Candidate
+                          <button 
+                            onClick={() => handleStatusUpdate(candidate.candidate_id, 'SELECTED')} 
+                            disabled={!!updatingStatus[candidate.candidate_id] || candidate.status === 'SELECTED'}
+                            className={`flex-1 font-medium py-2 rounded-lg flex items-center justify-center transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed ${candidate.status === 'SELECTED' ? 'bg-green-600 text-white border border-green-600' : candidate.status === 'PENDING' ? 'bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-600' : 'bg-white hover:bg-indigo-50 text-indigo-600 border border-indigo-200'}`}
+                          >
+                            {updatingStatus[candidate.candidate_id] === 'SELECTED' ? (
+                              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
+                            ) : (
+                              <><CheckCircle2 className="w-4 h-4 mr-2" /> {candidate.status === 'SELECTED' ? 'Selected' : 'Select Candidate'}</>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -419,10 +473,12 @@ const HRDashboard = () => {
                 </div>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    )}
+  </div>
+</div>
   );
 };
 

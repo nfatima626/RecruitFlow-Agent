@@ -33,6 +33,34 @@ def send_evidence_request_email(to_email: str, subject: str, body: str, candidat
     except Exception as e:
         print(f"Failed to send email: {e}")
 
+def send_interview_invitation_email(to_email: str, subject: str, body: str, candidate_id: str, cc_email: str = None):
+    smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    smtp_port = int(os.getenv("SMTP_PORT", 587))
+    smtp_user = os.getenv("EMAIL_USER")
+    smtp_pass = os.getenv("EMAIL_PASS")
+    
+    if not smtp_user or not smtp_pass:
+        print("Skipping email send: EMAIL_USER or EMAIL_PASS not configured.")
+        return
+        
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['Subject'] = f"{subject} [Ref: {candidate_id}]"
+    msg['From'] = smtp_user
+    msg['To'] = to_email
+    if cc_email:
+        msg['Cc'] = cc_email
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.send_message(msg)
+        server.quit()
+        print(f"Interview invitation email sent to {to_email} for candidate {candidate_id}")
+    except Exception as e:
+        print(f"Failed to send interview email: {e}")
+
 def get_email_body(msg):
     if msg.is_multipart():
         for part in msg.walk():

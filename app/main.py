@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Form, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from app.agent import evaluate_candidate_resume, draft_evidence_request_email
-from app.email_service import send_evidence_request_email, check_for_replies
+from app.agent import evaluate_candidate_resume, draft_evidence_request_email, draft_interview_invitation_email
+from app.email_service import send_evidence_request_email, check_for_replies, send_interview_invitation_email
 from app.db import (
     create_job_listing,
     get_all_jobs,
@@ -18,6 +18,8 @@ from app.db import (
     get_candidates_for_job,
     update_candidate_status,
     delete_candidate,
+    get_candidate_by_id,
+    get_job_by_id,
 )
 
 load_dotenv()
@@ -80,6 +82,15 @@ def handle_evidence_request(candidate_name, to_email, job_title, missing_evidenc
         send_evidence_request_email(to_email, subject, body, candidate_id)
     except Exception as e:
         print(f"Error in evidence request task: {e}")
+
+def handle_interview_invitation(candidate_name, to_email, job_title, candidate_id):
+    try:
+        body = draft_interview_invitation_email(candidate_name, job_title)
+        subject = f"Interview Invitation: {job_title}"
+        hr_email = os.getenv("HR_EMAIL")
+        send_interview_invitation_email(to_email, subject, body, candidate_id, cc_email=hr_email)
+    except Exception as e:
+        print(f"Error in interview invitation task: {e}")
 
 
 
@@ -242,11 +253,25 @@ def api_get_candidates(job_id: str):
 
 
 @app.patch("/api/candidates/{candidate_id}/status")
-def api_update_status(candidate_id: str, payload: StatusUpdateRequest):
+def api_update_status(candidate_id: str, payload: StatusUpdateRequest, background_tasks: BackgroundTasks):
   try:
     success = update_candidate_status(candidate_id, payload.status)
     if not success:
       raise HTTPException(status_code=404, detail="Candidate not found.")
+      
+    if payload.status in ["SELECTED", "ADVANCE", "Shortlist"]:
+      candidate = get_candidate_by_id(candidate_id)
+      if candidate:
+        job = get_job_by_id(candidate["job_id"])
+        if job:
+          background_tasks.add_task(
+              handle_interview_invitation,
+              candidate["candidate_name"],
+              candidate["email"],
+              job["title"],
+              candidate_id
+          )
+          
     return {
         "status": "success",
         "message": f"Candidate status updated to {payload.status}",

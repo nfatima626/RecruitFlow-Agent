@@ -27,11 +27,16 @@ const CandidatePortal = () => {
   useEffect(() => {
     loadJobs();
     
+    const interval = setInterval(() => loadJobs(false), 5000);
+    
     // Auto-refresh when the window gains focus (e.g., HR publishes job in another tab)
     const handleFocus = () => loadJobs(false);
     window.addEventListener('focus', handleFocus);
     
-    return () => window.removeEventListener('focus', handleFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [location.pathname]);
 
   const loadJobs = async (showLoader = true) => {
@@ -120,10 +125,12 @@ const CandidatePortal = () => {
           ))}
         </div>
       ) : jobs.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300">
-          <Briefcase className="mx-auto h-12 w-12 text-slate-300 mb-3" />
-          <h3 className="text-lg font-medium text-slate-900">No open positions</h3>
-          <p className="text-slate-500">Check back later for new opportunities.</p>
+        <div className="flex flex-col items-center justify-center text-center py-16 bg-white rounded-3xl border border-dashed border-slate-300 shadow-sm mx-4">
+          <div className="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-5 shadow-inner">
+            <Briefcase className="w-10 h-10" />
+          </div>
+          <h3 className="text-2xl font-extrabold text-slate-900 mb-2">No open positions</h3>
+          <p className="text-slate-600 text-lg max-w-md">We currently don't have any open roles, but we're always looking for great talent. Check back later!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -139,12 +146,12 @@ const CandidatePortal = () => {
                 <h3 className="text-xl font-bold text-slate-900">{job.title}</h3>
               </div>
               
-              <div className="space-y-2 mb-6 flex-1">
-                <div className="flex items-center text-sm text-slate-500">
-                  <MapPin className="w-4 h-4 mr-2" /> {job.location || 'Remote'}
+              <div className="space-y-3 mb-6 flex-1">
+                <div className="flex items-center text-sm font-medium text-slate-600">
+                  <MapPin className="w-4 h-4 mr-2 text-slate-400" /> {job.location || 'Remote'}
                 </div>
-                <div className="flex items-center text-sm text-slate-500">
-                  <Clock className="w-4 h-4 mr-2" /> {job.employment_type || 'Full-time'}
+                <div className="flex items-center text-sm font-medium text-slate-600">
+                  <Clock className="w-4 h-4 mr-2 text-slate-400" /> {job.employment_type || 'Full-time'}
                 </div>
               </div>
               
@@ -153,7 +160,7 @@ const CandidatePortal = () => {
                   setSelectedJob(job);
                   setSubmitStatus({ status: 'idle', message: '' });
                 }}
-                className="w-full bg-slate-50 hover:bg-indigo-600 text-slate-700 hover:text-white font-medium py-2.5 rounded-xl transition-colors border border-slate-200 hover:border-indigo-600"
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3 rounded-xl transition-all shadow-md hover:shadow-lg border border-transparent"
               >
                 Apply Now
               </button>
@@ -170,7 +177,7 @@ const CandidatePortal = () => {
             onClick={e => e.stopPropagation()}
           >
             {/* Left Side: Role Details */}
-            <div className="w-full md:w-5/12 bg-slate-50 p-6 md:p-10 overflow-y-auto border-r border-slate-200 flex flex-col hidden md:flex">
+            <div className="w-full md:w-5/12 bg-slate-50 p-6 md:p-10 overflow-y-auto border-r border-slate-200 hidden md:flex flex-col">
               <button onClick={closeDrawer} className="md:hidden self-end mb-4 text-slate-400 hover:text-slate-600">
                 <X className="w-6 h-6" />
               </button>
@@ -240,20 +247,20 @@ const CandidatePortal = () => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name <span className="text-red-500">*</span></label>
-                      <input type="text" name="candidate_name" required value={formData.candidate_name} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="Jane Doe" />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">Full Name <span className="text-red-500">*</span></label>
+                      <input type="text" name="candidate_name" required value={formData.candidate_name} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 font-medium" placeholder="Jane Doe" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address <span className="text-red-500">*</span></label>
-                      <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="jane@example.com" />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">Email Address <span className="text-red-500">*</span></label>
+                      <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 font-medium" placeholder="jane@example.com" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
-                      <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="+1 (555) 000-0000" />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">Phone Number</label>
+                      <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 font-medium" placeholder="+1 (555) 000-0000" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Desired Role</label>
-                      <input type="text" value={selectedJob.title} disabled className="w-full rounded-xl border-slate-200 bg-slate-100 border p-3.5 text-slate-500 cursor-not-allowed font-medium" />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">Desired Role</label>
+                      <input type="text" value={selectedJob.title} disabled className="w-full rounded-xl border-slate-200 bg-slate-100 border p-3.5 text-slate-500 cursor-not-allowed font-bold" />
                     </div>
                   </div>
                 </div>
@@ -266,30 +273,30 @@ const CandidatePortal = () => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">LinkedIn Profile</label>
-                      <input type="url" name="linkedin" value={formData.linkedin} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="https://linkedin.com/in/..." />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">LinkedIn Profile</label>
+                      <input type="url" name="linkedin" value={formData.linkedin} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 font-medium" placeholder="https://linkedin.com/in/..." />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Portfolio Website</label>
-                      <input type="url" name="portfolio" value={formData.portfolio} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="https://..." />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">Portfolio Website</label>
+                      <input type="url" name="portfolio" value={formData.portfolio} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 font-medium" placeholder="https://..." />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Years of Experience</label>
-                      <input type="number" name="years_experience" value={formData.years_experience} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="e.g. 5" />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">Years of Experience</label>
+                      <input type="number" name="years_experience" value={formData.years_experience} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 font-medium" placeholder="e.g. 5" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-2">Current Company</label>
-                      <input type="text" name="current_company" value={formData.current_company} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all" placeholder="Company Inc." />
+                      <label className="block text-sm font-bold text-slate-800 mb-2">Current Company</label>
+                      <input type="text" name="current_company" value={formData.current_company} onChange={handleInputChange} className="w-full rounded-xl border-slate-200 bg-slate-50 border p-3.5 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 font-medium" placeholder="Company Inc." />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Why do you want to join us?</label>
+                    <label className="block text-sm font-bold text-slate-800 mb-2">Why do you want to join us?</label>
                     <textarea 
                       name="why_join"
                       value={formData.why_join}
                       onChange={handleInputChange}
-                      rows="3"
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border p-4 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all resize-y"
+                      rows="4"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border p-4 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all resize-y text-slate-900 font-medium"
                       placeholder="Tell us a little bit about your motivation..."
                     ></textarea>
                   </div>

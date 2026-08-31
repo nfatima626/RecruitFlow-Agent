@@ -86,3 +86,24 @@ def draft_evidence_request_email(candidate_name: str, job_title: str, missing_ev
   except Exception as e:
     print(f"Agent Draft Error: {e}")
     return f"Dear {candidate_name},\n\nThank you for applying to the {job_title} role. We are reviewing your profile and would like some more details regarding your experience with: {', '.join(missing_evidence)}.\n\nPlease reply to this email with some clarification so we can proceed with your evaluation.\n\nBest,\nRecruitFlow AI Assistant"
+
+def draft_interview_invitation_email(candidate_name: str, job_title: str) -> str:
+  prompt = f"""
+    You are an AI recruiting assistant acting on behalf of a hiring manager for the '{job_title}' role.
+    You need to write a polite, professional, and welcoming email to the candidate, {candidate_name}.
+    
+    The candidate has been selected for an interview!
+    
+    Draft an email inviting them to a technical interview. Ask them to share their availability for the upcoming week.
+    The tone should be enthusiastic and professional. Do not include a subject line, just the email body.
+    Sign off as "RecruitFlow AI Assistant".
+  """
+  try:
+    response = client.models.generate_content(
+        model="gemini-3.5-flash",
+        contents=prompt,
+    )
+    return response.text.strip()
+  except Exception as e:
+    print(f"Agent Draft Error: {e}")
+    return f"Dear {candidate_name},\n\nCongratulations! We are thrilled to inform you that you have been selected for an interview for the {job_title} role.\n\nPlease reply to this email with your availability for a technical interview sometime next week.\n\nBest,\nRecruitFlow AI Assistant"
